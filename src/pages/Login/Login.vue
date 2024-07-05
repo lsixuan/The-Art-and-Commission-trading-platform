@@ -2,9 +2,14 @@
     <div class="login-page">
         <div class="login-box">
             <div class="logo">
-                <h1>Customer</h1>
+                <h2 v-show="menuActive == '1'">Login</h2>
+                <h2 v-show="menuActive == '2'">Login</h2>
             </div>
-            <router-link to="/register" class="register">Not register yet</router-link>
+            <el-menu :default-active="menuActive" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                <el-menu-item index="1">Customer</el-menu-item>
+                <el-menu-item index="2">Artist</el-menu-item>
+            </el-menu>
+
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
                 <el-form-item prop="name">
                     <el-input v-model="ruleForm.name" placeholder="Nickname/E-meail/Phone Number"></el-input>
@@ -18,28 +23,7 @@
                 </el-form-item>
             </el-form>
             <div class="form-footer">
-
-                <router-link to="">Forget Password</router-link>
-            </div>
-        </div>
-        <div class="login-box">
-            <div class="logo">
-                <h1>Artist</h1>
-            </div>
-            <router-link to="/register" class="register">Not register yet</router-link>
-            <el-form :model="ruleForm1" :rules="rules" ref="ruleForm1" class="demo-ruleForm">
-                <el-form-item prop="name">
-                    <el-input v-model="ruleForm1.name" placeholder="Nickname/E-meail/Phone Number"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input type="password" v-model="ruleForm1.password" placeholder="Password"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button style="width: 100%;" type="primary" @click="submitForm('ruleForm1', '2')">Log
-                        in</el-button>
-                </el-form-item>
-            </el-form>
-            <div class="form-footer">
+                <router-link to="/register" class="register">Not register yet</router-link>
                 <router-link to="">Forget Password</router-link>
             </div>
         </div>
@@ -51,12 +35,9 @@ export default {
     name: 'Login',
     data() {
         return {
+            menuActive: '1',
             ruleForm: {
                 name: 'admin',
-                password: '123456',
-            },
-            ruleForm1: {
-                name: 'admin1',
                 password: '123456',
             },
             rules: {
@@ -70,19 +51,22 @@ export default {
         }
     },
     methods: {
-        submitForm(formName, n) {
+        submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.$message({
-                        message: '登陆成功',
+                        message: 'success',
                         type: 'success'
                     });
-                    this.$router.push({ path: '/home/userhome', query: { isHuaOrQih: n } })
+                    this.$router.push({ path: '/home/userhome', query: { isHuaOrQih: this.menuActive } })
                 } else {
                     console.log('error submit!!');
                     return false;
                 }
             });
+        },
+        handleSelect(key, keyPath) {
+            this.menuActive = key
         }
     }
 }
@@ -114,13 +98,12 @@ export default {
         text-align: center;
     }
 
-    .register {
-        margin: 20px 0;
-        color: #00a8e9;
-        font-size: 14px;
-    }
+
 
     .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         width: 100%;
         margin-top: 20px;
         font-size: 14px;
@@ -132,6 +115,10 @@ export default {
         width: 50%;
         text-align: center;
         margin-bottom: 20px;
+    }
+
+    .el-menu.el-menu--horizontal {
+        border: 0;
     }
 }
 </style>
