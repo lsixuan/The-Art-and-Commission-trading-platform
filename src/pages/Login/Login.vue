@@ -2,46 +2,48 @@
     <div class="login-page">
         <div class="login-box">
             <div class="logo">
-                <h2 v-show="menuActive == '1'">Login</h2>
-                <h2 v-show="menuActive == '2'">Login</h2>
+                <h2 v-show="menuActive == '1'">Customer</h2>
+                <h2 v-show="menuActive == '2'">Artist</h2>
             </div>
             <el-menu :default-active="menuActive" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-                <el-menu-item index="1">Customer</el-menu-item>
-                <el-menu-item index="2">Artist</el-menu-item>
+                <el-menu-item index="1">I am a Customer</el-menu-item>
+                <el-menu-item index="2">I am an Artist</el-menu-item>
             </el-menu>
 
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm">
-                <el-form-item prop="name">
-                    <el-input v-model="ruleForm.name" placeholder="Nickname/E-meail/Phone Number"></el-input>
+                <el-form-item prop="userName">
+                    <el-input v-model="ruleForm.userName" placeholder="Nickname/E-meail/Phone Number"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input type="password" v-model="ruleForm.password" placeholder="Password"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button style="width: 100%;" type="primary" @click="submitForm('ruleForm', '1')">Log
-                        in</el-button>
+                  <el-button style="width: 100%;margin-bottom: 20px" type="primary" @click="submitForm('ruleForm', '1')">Log in</el-button>
+
+                  <el-button style="width: 100%;margin-left: 0px" type="primary" @click="gotoArtists()">guest</el-button>
                 </el-form-item>
             </el-form>
             <div class="form-footer">
                 <router-link to="/register" class="register">Not register yet</router-link>
-                <router-link to="">Forget Password</router-link>
+
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import {getCurrentUser, login} from '@/api/user'
 export default {
     name: 'Login',
     data() {
         return {
             menuActive: '1',
             ruleForm: {
-                name: 'admin',
+                userName: '12',
                 password: '123456',
             },
             rules: {
-                name: [
+              userName: [
                     { required: true, message: 'Not filled', trigger: 'blur' },
                 ],
                 password: [
@@ -51,14 +53,46 @@ export default {
         }
     },
     methods: {
+        gotoArtists(){
+          // set
+          this.$storage.set("role", 3);
+          const userInfo = {
+            role: 3,
+            avatar: 'http://localhost:8082/img/user.f00823e5.png',
+          }
+          this.$storage.set("currentUser", userInfo);
+          this.$router.push({path: '/artists'})
+        },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    this.$message({
-                        message: 'success',
+                  this.ruleForm.role = this.menuActive
+                  login(this.ruleForm).then(res => {
+
+                    if (res.code == 200 || res.code == 0) {
+                      // set token
+                      this.$storage.set("Token", res.token);
+                      this.$storage.set("role", 0);
+                      this.$message({
+                        message: 'Login successful',
                         type: 'success'
-                    });
-                    this.$router.push({ path: '/home/userhome', query: { isHuaOrQih: this.menuActive } })
+                      });
+                      getCurrentUser().then(res => {
+                        this.$router.push({ path: '/home/userhome', query: { isHuaOrQih: this.menuActive } })
+
+                        this.$storage.set("currentUser", res.data);
+                      })
+
+                    }else{
+                      this.$message({
+                        message: res.msg,
+                        type: 'error'
+                      });
+                    }
+
+                  })
+
+
                 } else {
                     console.log('error submit!!');
                     return false;
@@ -97,8 +131,6 @@ export default {
         margin-bottom: 50px;
         text-align: center;
     }
-
-
 
     .form-footer {
         display: flex;

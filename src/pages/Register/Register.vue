@@ -15,37 +15,10 @@
                     <el-input type="password" v-model="ruleForm.password" placeholder="Password"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-col :span="6">
-                        <el-form-item prop="phone">
-                            <el-select value="+86">
-                                <el-option label="+66(Thailand)" value="+66"></el-option>
-                                <el-option label="+66(Thailand)" value="+66"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="18">
-                        <el-form-item>
-                            <el-input v-model="ruleForm.phone"
-                                placeholder="Mobile number, only used for SMS notifications"></el-input>
-                        </el-form-item>
-                    </el-col>
-                </el-form-item>
-                <el-form-item prop="phoneCode">
-                    <el-col :span="18">
-                        <el-form-item>
-                            <el-input v-model="ruleForm.phoneCode" placeholder="Verification code"></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="6">
-                        <el-button style="color: #00a8e9;">Obtain verification code</el-button>
-                    </el-col>
-
-                </el-form-item>
-                <el-form-item>
                     <p>Please confirm that you have agreed<span style="color: #00a8e9;">《Pre use agreement》</span></p>
                 </el-form-item>
                 <el-form-item>
-                    <el-button style="width: 100%;" type="primary" @click="submitForm('ruleForm')">Register</el-button>
+                    <el-button style="width: 100%;" type="primary" @click="submitForm('ruleForm')">Next step</el-button>
                 </el-form-item>
             </el-form>
             <div class="form-footer">
@@ -64,8 +37,6 @@ export default {
             ruleForm: {
                 name: '',
                 password: '',
-                phone: '',
-                phoneCode: ''
             },
             rules: {
                 name: [
@@ -74,27 +45,21 @@ export default {
                 password: [
                     { required: true, message: 'Not filled', trigger: 'blur' },
                 ],
-                phone: [
-                    { required: true, message: 'Not filled', trigger: 'blur' },
-                ],
-                phoneCode: [
-                    { required: true, message: 'Not filled', trigger: 'blur' },
-                ]
             }
         }
     },
     methods: {
         submitForm(formName) {
-            this.$refs[formName].validate((valid) => {
+            this.$refs[formName].validate((valid,values) => {
+
                 if (valid) {
                     this.$message({
-                        message: '注册成功，请填写用户信息',
+                        message: 'Operation successful, please continue with the operation',
                         type: 'success'
                     });
-                    this.$router.push('/userInfo')
-                    this.$router.push({ path: '/userInfo', query: { isHuaOrQih: this.menuActive } })
+                    // this.$router.push('/userInfo')
+                    this.$router.push({ path: '/userInfo', query: { isHuaOrQih: this.menuActive,userName:this.ruleForm.name,password:this.ruleForm.password} })
                 } else {
-                    console.log('error submit!!');
                     return false;
                 }
             });

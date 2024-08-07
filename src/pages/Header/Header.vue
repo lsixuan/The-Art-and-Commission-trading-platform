@@ -2,19 +2,25 @@
     <div>
         <div class="header">
             <img style="height: 56px;" src="../../assets/logo.png" alt="">
-            <el-menu :default-active="defaultActive" active-text-color="#00a8e9" mode="horizontal">
-                <el-menu-item index="1">
-                    <router-link to="/home/userhome">Home Page</router-link>
+
+
+          <el-menu :default-active="defaultActive" active-text-color="#00a8e9" mode="horizontal">
+                <el-menu-item index="1" v-if="role==1||role==2||role==0">
+                    <router-link to="/home/userhome" >Home Page</router-link>
                 </el-menu-item>
                 <el-menu-item index="2">
                     <router-link to="/artists">Artist</router-link>
                 </el-menu-item>
-                <el-menu-item index="3">1</el-menu-item>
-                <el-menu-item index="4">2</el-menu-item>
-                <el-menu-item index="5">3</el-menu-item>
-                <el-menu-item index="6">4</el-menu-item>
-                <el-menu-item index="7">5</el-menu-item>
-                <el-menu-item index="8">6</el-menu-item>
+                <el-menu-item index="3" v-if="role==0">
+                  <router-link to="/userVerification" >userVerification</router-link>
+                </el-menu-item>
+                <el-menu-item index="4" v-if="role==0">
+                  <router-link to="/userManage" >userManage</router-link>
+
+                </el-menu-item>
+                <el-menu-item index="5">
+                  <router-link to="/albums" v-if="role==2">myAlbums</router-link>
+                  </el-menu-item>
             </el-menu>
             <ul class="userinfo">
                 <li><i class="el-icon-search"></i></li>
@@ -23,17 +29,18 @@
 
                     <el-dropdown>
                         <span class="el-dropdown-link">
-                            <img src="../../assets/user.png" alt="">
+<!--                            <img src="../../assets/user.png" alt="">-->
+                           <img :src="userAvatar" alt="">
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item>
-                                <router-link to="/">Log out</router-link>
+                                <span @click="logout">Log out</span>
                             </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </li>
                 <li>
-                    <el-button type="primary">Release requirements</el-button>
+<!--                    <el-button type="primary">Release requirements</el-button>-->
                 </li>
             </ul>
         </div>
@@ -42,10 +49,36 @@
 
 <script>
 export default {
-    name: 'Header',
-    props: ['defaultActive']
+  name: 'Header',
+  props: ['defaultActive'],
+  data() {
+    return {
+      defaultAvatar: '../../assets/user.png',
+      defaultRole: '1',
+    }
+  },
+  computed: {
+    userAvatar() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      return currentUser && currentUser.avatar ? currentUser.avatar : this.defaultAvatar;
+    },
+    role(){
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      debugger
+      return currentUser && currentUser.role ? currentUser.role : this.defaultRole;
+    }
+  },
+  methods:{
+    logout(){
+      // wipe cache 
+      localStorage.clear();
+      // Jump to login page
+      this.$router.push({path: '/'})
+    },
+  }
 }
 </script>
+
 
 <style lang="scss" scoped>
 .header {
