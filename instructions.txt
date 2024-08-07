@@ -1,0 +1,10 @@
+Pay attention
+
+Front end environment
+node 18.12.0
+Backend
+Import MySQL database
+
+in application.yml ， Set the location for storing files and upload files
+file:
+  upload-dir: D:\upload
